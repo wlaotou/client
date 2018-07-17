@@ -53,7 +53,7 @@ func (a *FakeAPI) Get(_ MetaContext, arg APIArg) (*APIRes, error) {
 
 }
 
-func (a *FakeAPI) GetDecode(arg APIArg, v APIResponseWrapper) error {
+func (a *FakeAPI) GetDecode(m MetaContext, arg APIArg, v APIResponseWrapper) error {
 	return fmt.Errorf("GetDecode is phony")
 }
 

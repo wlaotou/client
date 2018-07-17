@@ -96,10 +96,9 @@ func (d *DeviceWithKeys) Populate(m MetaContext) (uid keybase1.UID, err error) {
 		Endpoint:    "key/owner/device",
 		SessionType: APISessionTypeNONE,
 		Args:        HTTPArgs{"kid": S{Val: d.signingKey.GetKID().String()}},
-		NetContext:  m.Ctx(),
 	}
 	var res ownerDeviceReply
-	err = m.G().API.GetDecode(arg, &res)
+	err = m.G().API.GetDecode(m, arg, &res)
 	if err != nil {
 		return uid, err
 	}

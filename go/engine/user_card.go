@@ -55,7 +55,7 @@ func getUserCard(m libkb.MetaContext, uid keybase1.UID, useSession bool) (ret *k
 
 	var card card
 
-	if err = m.G().API.GetDecode(arg, &card); err != nil {
+	if err = m.G().API.GetDecode(m, arg, &card); err != nil {
 		m.CWarningf("error getting user/card for %s: %s\n", uid, err)
 		return nil, err
 	}

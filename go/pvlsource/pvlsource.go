@@ -193,10 +193,9 @@ func (r *pvlServerRes) GetAppStatus() *libkb.AppStatus {
 func (s *PvlSourceImpl) fetch(m libkb.MetaContext, hash libkb.PvlKitHash) (libkb.PvlKitString, error) {
 	m.CDebugf("PvlSource: fetching from server: %s", hash)
 	var res pvlServerRes
-	err := m.G().API.GetDecode(libkb.APIArg{
+	err := m.G().API.GetDecode(m, libkb.APIArg{
 		Endpoint:    "merkle/pvl",
 		SessionType: libkb.APISessionTypeNONE,
-		MetaContext: m,
 		Args: libkb.HTTPArgs{
 			"hash": libkb.S{Val: string(hash)},
 		},

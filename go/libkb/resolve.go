@@ -273,7 +273,7 @@ func (r *Resolver) resolveURLViaServerLookup(ctx context.Context, au AssertionUR
 	defer m.CVTrace(VLog1, fmt.Sprintf("Resolver#resolveURLViaServerLookup(input = %q)", input), func() error { return res.err })()
 
 	if au.IsTeamID() || au.IsTeamName() {
-		return r.resolveTeamViaServerLookup(ctx, au)
+		return r.resolveTeamViaServerLookup(m, au)
 	}
 
 	var key, val string
@@ -367,8 +367,8 @@ func (t *teamLookup) GetAppStatus() *AppStatus {
 	return &t.Status
 }
 
-func (r *Resolver) resolveTeamViaServerLookup(ctx context.Context, au AssertionURL) (res ResolveResult) {
-	r.G().Log.CDebugf(ctx, "resolveTeamViaServerLookup")
+func (r *Resolver) resolveTeamViaServerLookup(m MetaContext, au AssertionURL) (res ResolveResult) {
+	m.CDebugf("resolveTeamViaServerLookup")
 
 	res.queriedByTeamID = au.IsTeamID()
 	key, val, err := au.ToLookup()
@@ -377,7 +377,7 @@ func (r *Resolver) resolveTeamViaServerLookup(ctx context.Context, au AssertionU
 		return res
 	}
 
-	arg := NewAPIArgWithNetContext(ctx, "team/get")
+	arg := APIArg{Endpoint: "team/get"}
 	arg.SessionType = APISessionTypeREQUIRED
 	arg.Args = make(HTTPArgs)
 	arg.Args[key] = S{Val: val}
@@ -387,7 +387,7 @@ func (r *Resolver) resolveTeamViaServerLookup(ctx context.Context, au AssertionU
 	}
 
 	var lookup teamLookup
-	if err := r.G().API.GetDecode(arg, &lookup); err != nil {
+	if err := r.G().API.GetDecode(m, arg, &lookup); err != nil {
 		res.err = err
 		return res
 	}

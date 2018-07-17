@@ -698,8 +698,8 @@ func (a *InternalAPIEngine) GetResp(arg APIArg) (*http.Response, func(), error) 
 
 // GetDecode performs a GET request and decodes the response via
 // JSON into the value pointed to by v.
-func (a *InternalAPIEngine) GetDecode(arg APIArg, v APIResponseWrapper) error {
-	m := arg.GetMetaContext(a.G())
+func (a *InternalAPIEngine) GetDecode(m MetaContext, arg APIArg, v APIResponseWrapper) error {
+	arg.MetaContext = m
 	return a.getDecode(m, arg, v)
 }
 

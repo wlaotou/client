@@ -58,8 +58,7 @@ func (f *FavoritesAPIResult) GetAppStatus() *libkb.AppStatus {
 func (e *FavoriteList) Run(m libkb.MetaContext) error {
 	arg := libkb.NewRetryAPIArg("kbfs/favorite/list")
 	arg.SessionType = libkb.APISessionTypeREQUIRED
-	arg.NetContext = m.Ctx()
-	return m.G().API.GetDecode(arg, &e.result)
+	return m.G().API.GetDecode(m, arg, &e.result)
 }
 
 // Favorites returns the list of favorites that Run generated.

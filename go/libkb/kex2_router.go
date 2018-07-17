@@ -12,19 +12,19 @@ import (
 
 // KexRouter implements the kex2.MessageRouter interface.
 type KexRouter struct {
-	Contextified
+	MetaContextified
 }
 
 // NewKexRouter creates a contextified KexRouter.
-func NewKexRouter(g *GlobalContext) *KexRouter {
-	return &KexRouter{Contextified: NewContextified(g)}
+func NewKexRouter(m MetaContext) *KexRouter {
+	return &KexRouter{MetaContextified: NewMetaContextified(m)}
 }
 
 // Post implements Post in the kex2.MessageRouter interface.
 func (k *KexRouter) Post(sessID kex2.SessionID, sender kex2.DeviceID, seqno kex2.Seqno, msg []byte) (err error) {
-	k.G().Log.Debug("+ KexRouter.Post(%x, %x, %d, ...)", sessID, sender, seqno)
+	k.M().CDebugf("+ KexRouter.Post(%x, %x, %d, ...)", sessID, sender, seqno)
 	defer func() {
-		k.G().Log.Debug("- KexRouter.Post(%x, %x, %d) -> %s", sessID, sender, seqno, ErrToOk(err))
+		k.M().CDebugf("- KexRouter.Post(%x, %x, %d) -> %s", sessID, sender, seqno, ErrToOk(err))
 	}()
 
 	_, err = k.G().API.Post(APIArg{
@@ -53,9 +53,9 @@ func (k *kexResp) GetAppStatus() *AppStatus {
 
 // Get implements Get in the kex2.MessageRouter interface.
 func (k *KexRouter) Get(sessID kex2.SessionID, receiver kex2.DeviceID, low kex2.Seqno, poll time.Duration) (msgs [][]byte, err error) {
-	k.G().Log.Debug("+ KexRouter.Get(%x, %x, %d, %s)", sessID, receiver, low, poll)
+	k.M().CDebugf("+ KexRouter.Get(%x, %x, %d, %s)", sessID, receiver, low, poll)
 	defer func() {
-		k.G().Log.Debug("- KexRouter.Get(%x, %x, %d, %s) -> %s (messages: %d)", sessID, receiver, low, poll, ErrToOk(err), len(msgs))
+		k.M().CDebugf("- KexRouter.Get(%x, %x, %d, %s) -> %s (messages: %d)", sessID, receiver, low, poll, ErrToOk(err), len(msgs))
 	}()
 
 	if poll > HTTPPollMaximum {
@@ -73,7 +73,7 @@ func (k *KexRouter) Get(sessID kex2.SessionID, receiver kex2.DeviceID, low kex2.
 	}
 	var j kexResp
 
-	if err = k.G().API.GetDecode(arg, &j); err != nil {
+	if err = k.G().API.GetDecode(k.M(), arg, &j); err != nil {
 		return nil, err
 	}
 	if j.Status.Code != SCOk {

@@ -119,7 +119,7 @@ func newUser(uid keybase1.UID, ca *CredentialAuthority) *user {
 type UserKeyAPIer interface {
 	// GetUser looks up the username and KIDS active for the given user.
 	// Deleted users are loaded by default.
-	GetUser(context.Context, keybase1.UID) (
+	GetUser(libkb.MetaContext, keybase1.UID) (
 		un libkb.NormalizedUsername, sibkeys, subkeys []keybase1.KID, deleted bool, err error)
 	// PollForChanges returns the UIDs that have recently changed on the server
 	// side. It will be called in a poll loop. This call should function as
@@ -127,7 +127,7 @@ type UserKeyAPIer interface {
 	// to report, or a sufficient amount of time has passed. If an error occurred,
 	// then PollForChanges should delay before return, so we don't wind up
 	// busy-waiting.
-	PollForChanges(context.Context) ([]keybase1.UID, error)
+	PollForChanges(libkb.MetaContext) ([]keybase1.UID, error)
 }
 
 // engine specifies the internal mechanics of how this CredentialAuthority
@@ -213,7 +213,7 @@ func (v *CredentialAuthority) pollOnce() error {
 // runWithCancel runs an API call while listening for a shutdown of the CredentialAuthority.
 // If it gets one, it uses context-based cancelation to cancel the outstanding API call
 // (or sleep in the case of Poll()'ing).
-func (v *CredentialAuthority) runWithCancel(body func(ctx context.Context) error) error {
+func (v *CredentialAuthority) runWithCancel(body func(m libkb.MetaContext) error) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	doneCh := make(chan error)
 	var err error
